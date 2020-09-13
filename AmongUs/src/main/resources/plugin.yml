@@ -1,0 +1,13 @@
+main: poltixe.spigot.amongus.App
+name: AmongUs
+version: 0.1
+
+commands:
+    readycheck:
+      description: Checks who is ready
+      usage: /readycheck
+      permission: amongus.readycheck
+    readyup:
+      description: Ready up
+      usage: /readyup
+      permission: amongus.readyup
