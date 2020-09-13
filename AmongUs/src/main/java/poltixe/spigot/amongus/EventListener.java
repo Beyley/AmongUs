@@ -19,7 +19,7 @@ import net.md_5.bungee.api.ChatColor;
 import poltixe.spigot.minigamequeue.*;
 
 public class EventListener implements Listener {
-    // App app = new App();
+    private App app = App.getPlugin(App.class);
 
     FileConfiguration config = App.getPlugin(App.class).getConfig();
     static Random r = new Random();
@@ -31,20 +31,39 @@ public class EventListener implements Listener {
         target.setMetadata("imposter", new FixedMetadataValue(App.getPlugin(App.class), false));
     }
 
-    public Scoreboard createScoreboard() {
+    public Scoreboard createScoreboard(boolean imposter) {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective objective = scoreboard.registerNewObjective("scoreboard", "dummy");
 
-        objective.setDisplayName("Custom Scoreboard");
+        objective.setDisplayName("Among Us");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        Score first = objective.getScore("First Line");
-        Score second = objective.getScore("Second Line");
-        Score third = objective.getScore("Third Line");
+        Score first;
+        Score fourth;
+        Score fifth = objective.getScore("");
 
-        first.setScore(2);
-        second.setScore(1);
-        third.setScore(0);
+        if (imposter) {
+            first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.RED + "Imposter");
+        } else {
+            first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.BLUE + "Crewmate");
+        }
+        Score second = objective.getScore("");
+        Score third = objective.getScore("Imposters: ");
+        if (imposter) {
+            fourth = objective.getScore(ChatColor.RED + app.imposter1.player.getName());
+            if (app.imposter2 != null)
+                fifth = objective.getScore(ChatColor.RED + app.imposter2.player.getName());
+        } else {
+            fourth = objective.getScore(ChatColor.RED + "???");
+            if (app.imposter2 != null)
+                fifth = objective.getScore(ChatColor.RED + "???");
+        }
+
+        first.setScore(4);
+        second.setScore(3);
+        third.setScore(2);
+        fourth.setScore(1);
+        fifth.setScore(0);
 
         return scoreboard;
     }
@@ -79,18 +98,12 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onGameStart(GameStartEvent event) {
-        App app = App.getPlugin(App.class); // .gameStarted = true;
-
         app.gameStarted = true;
 
         Object[] players = Bukkit.getOnlinePlayers().toArray();
 
         for (int i = 0; i < players.length; i++) {
             Player target = (Player) players[i];
-            // Bukkit.broadcastMessage(String.valueOf(i));
-            // Bukkit.broadcastMessage(target.getName());
-
-            // Bukkit.broadcastMessage(app.toString());
 
             app.playerStates[i] = new PlayerState(target, false, true);
         }
@@ -98,38 +111,26 @@ public class EventListener implements Listener {
         if (players.length < 7) {
             Object[] tempObject = getRandomPlayerNoCopies(app.playerStates, -1);
 
-            // Bukkit.broadcastMessage(String.valueOf((int) tempObject[1]));
-            // Bukkit.broadcastMessage(((PlayerState) tempObject[0]).player.getName());
-
-            // Bukkit.broadcastMessage(app.toString());
-
             app.playerStates[(int) tempObject[1]].imposter = true;
-            // app.playerStates[(int) tempObject[1]].player.sendMessage(ChatColor.BOLD +
-            // "You are an imposter");
-            // app.playerStates[(int) tempObject[1]].player.sendTitle(ChatColor.BOLD + "You
-            // are an imposter", null, 10, 70,
-            // 20);
+            app.imposter1 = app.playerStates[(int) tempObject[1]];
         } else {
             Object[] tempObject1 = getRandomPlayerNoCopies(app.playerStates, -1);
             Object[] tempObject2 = getRandomPlayerNoCopies(app.playerStates, (int) tempObject1[1]);
 
             app.playerStates[(int) tempObject1[1]].imposter = true;
-            // app.playerStates[(int) tempObject1[1]].player.sendTitle(ChatColor.BOLD + "You
-            // are an imposter", null, 10,
-            // 70, 20);
+            app.imposter1 = app.playerStates[(int) tempObject1[1]];
+
             app.playerStates[(int) tempObject2[1]].imposter = true;
-            // app.playerStates[(int) tempObject2[1]].player.sendTitle(ChatColor.BOLD + "You
-            // are an imposter", null, 10,
-            // 70, 20);
+            app.imposter2 = app.playerStates[(int) tempObject2[1]];
         }
 
         for (PlayerState state : app.playerStates) {
             if (state.imposter) {
                 state.player.sendTitle(ChatColor.BOLD + "You are an " + ChatColor.RED + "Imposter", null, 10, 70, 20);
-                state.player.setScoreboard(createScoreboard());
+                state.player.setScoreboard(createScoreboard(true));
             } else {
                 state.player.sendTitle(ChatColor.BOLD + "You are a " + ChatColor.BLUE + "Crewmate", null, 10, 70, 20);
-                state.player.setScoreboard(createScoreboard());
+                state.player.setScoreboard(createScoreboard(false));
             }
         }
     }

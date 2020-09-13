@@ -8,6 +8,9 @@ public class App extends JavaPlugin {
     public PlayerState[] playerStates = new PlayerState[10];
     public boolean gameStarted = false;
 
+    public PlayerState imposter1 = null;
+    public PlayerState imposter2 = null;
+
     @Override
     public void onEnable() {
         /// config.addDefault("minPlayersForStart", 4);
