@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Server;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
@@ -125,6 +126,8 @@ public class EventListener implements Listener {
         }
 
         for (PlayerState state : app.playerStates) {
+            state.player.setGameMode(GameMode.CREATIVE);
+
             if (state.imposter) {
                 state.player.sendTitle(ChatColor.BOLD + "You are an " + ChatColor.RED + "Imposter", null, 10, 70, 20);
                 state.player.setScoreboard(createScoreboard(true));
