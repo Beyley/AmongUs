@@ -29,7 +29,30 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player target = event.getPlayer();
 
-        target.setMetadata("imposter", new FixedMetadataValue(App.getPlugin(App.class), false));
+        // Checks if the game has already started
+        if (app.gameStarted) {
+            // Set joining player to spectator
+            target.setGameMode(GameMode.SPECTATOR);
+        } else {
+            // Give player base metadata to not crash on checking in later code
+            target.setMetadata("imposter", new FixedMetadataValue(App.getPlugin(App.class), false));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        // Get the player
+        Player target = event.getPlayer();
+
+        // Send a PlayerDieEvent to say that the player died with the argument that it
+        // was a disconnect kill
+        PlayerDieEvent playerDieEvent = new PlayerDieEvent(target, true);
+        Bukkit.getPluginManager().callEvent(playerDieEvent);
+    }
+
+    @EventHandler
+    public void onPlayerDie(PlayerDieEvent event) {
+
     }
 
     public Scoreboard createScoreboard(boolean imposter) {
