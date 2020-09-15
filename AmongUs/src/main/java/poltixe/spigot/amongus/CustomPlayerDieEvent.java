@@ -3,11 +3,11 @@ package poltixe.spigot.amongus;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 
-public class PlayerDieEvent extends Event {
+public class CustomPlayerDieEvent extends Event {
     private final Player player;
     private final Boolean disconnectKill;
 
-    public PlayerDieEvent(Player player, boolean disconnectKill) {
+    public CustomPlayerDieEvent(Player player, boolean disconnectKill) {
         this.player = player;
         this.disconnectKill = disconnectKill;
     }

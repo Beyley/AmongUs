@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.metadata.*;
 import org.bukkit.scoreboard.*;
@@ -40,19 +39,55 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent event) {
+    public void PlayerQuitEvent(PlayerQuitEvent event) {
+        // Disable leave message
+        event.setQuitMessage("");
+
         // Get the player
         Player target = event.getPlayer();
 
         // Send a PlayerDieEvent to say that the player died with the argument that it
         // was a disconnect kill
-        PlayerDieEvent playerDieEvent = new PlayerDieEvent(target, true);
+        CustomPlayerDieEvent playerDieEvent = new CustomPlayerDieEvent(target, true);
         Bukkit.getPluginManager().callEvent(playerDieEvent);
     }
 
     @EventHandler
-    public void onPlayerDie(PlayerDieEvent event) {
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        event.setDeathMessage("");
 
+        // Get the player
+        Player target = event.getEntity();
+
+        // Send a PlayerDieEvent to say that the player died with the argument that it
+        // was a disconnect kill
+        CustomPlayerDieEvent playerDieEvent = new CustomPlayerDieEvent(target, false);
+        Bukkit.getPluginManager().callEvent(playerDieEvent);
+    }
+
+    @EventHandler
+    public void onCustomPlayerDie(CustomPlayerDieEvent event) {
+        Player target = event.getPlayer();
+
+        for (PlayerState state : app.playerStates) {
+            if (state.player == target) {
+                state.alive = false;
+
+                if (event.ifDisconnectKill()) {
+                    Bukkit.broadcastMessage(ChatColor.RED + target.getName() + " has disconnected!");
+                } else {
+                    target.setGameMode(GameMode.SPECTATOR);
+
+                    Location deathLocation = target.getLocation();
+
+                    app.getServer().getScheduler().scheduleSyncRepeatingTask(app, new Runnable() {
+                        public void run() {
+                            target.getWorld().strikeLightning(deathLocation);
+                        }
+                    }, 0, 400);
+                }
+            }
+        }
     }
 
     public Scoreboard createScoreboard(boolean imposter) {

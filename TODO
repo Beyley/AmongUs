@@ -1,2 +1,5 @@
 Implement emergency meetings
-Implement deaths (partially done)
+Implement deaths 
+    -Remove death message (done)
+    -Bodies staying after death
+    -Game ends after all players die
