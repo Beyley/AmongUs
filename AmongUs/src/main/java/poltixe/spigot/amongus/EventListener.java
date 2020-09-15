@@ -11,7 +11,10 @@ import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.*;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.*;
 
 import net.md_5.bungee.api.ChatColor;
@@ -252,6 +255,9 @@ public class EventListener implements Listener {
                 state.player.sendTitle(ChatColor.BOLD + "You are an " + ChatColor.RED + "Imposter", null, 10, 70, 20);
                 // Sets the players scoreboard to the imposter variant
                 state.player.setScoreboard(createScoreboard(true));
+
+                state.player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
+                state.player.getInventory().addItem((new Potion(PotionType.INVISIBILITY).toItemStack(2)));
             } else {
                 // Send the title that the player is an crewmate
                 state.player.sendTitle(ChatColor.BOLD + "You are a " + ChatColor.BLUE + "Crewmate", null, 10, 70, 20);
