@@ -5,10 +5,11 @@ import org.bukkit.event.*;
 
 //Event called when a player needs to be registered as dead by the plugin
 public class CustomPlayerDieEvent extends Event {
+    // TODO perhaps create a DeathState object?
+    
     // The player in question
     private final Player player;
     // Bool to store whether or not the kill was because of a disconnect
-    // TODO perhaps create a DeathState object?
     private final Boolean disconnectKill;
 
     // Defines the constructor for the event taking the player and a bool of whether
