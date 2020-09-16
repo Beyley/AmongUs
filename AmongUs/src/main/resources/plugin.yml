@@ -1,6 +1,8 @@
 main: poltixe.spigot.amongus.App
 name: AmongUs
 version: 0.1
+api-version: 1.15
+depend: [MinigameQueue]
 
 commands:
     readycheck:
