@@ -11,13 +11,7 @@ public class App extends JavaPlugin {
     public PlayerState[] playerStates = new PlayerState[10];
     // A bool to store whether or not the game has started
     // TODO Create a GameState object for better consistency
-    public boolean gameStarted = false;
-
-    // PlayerStates storing both imposters, can probably be implemented in a much
-    // better way
-    // TODO needs more looking into for better solution
-    public PlayerState imposter1 = null;
-    public PlayerState imposter2 = null;
+    public GameState gameState = new GameState(null, null);
 
     // Run when the plugin is enabled
     @Override

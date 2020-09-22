@@ -1,7 +1,6 @@
 package poltixe.spigot.amongus;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -37,7 +36,7 @@ public class EventListener implements Listener {
         Player target = event.getPlayer();
 
         // Checks if the game has already started
-        if (!app.gameStarted) {
+        if (!app.gameState.gameStarted) {
             // If not, give player base metadata to not crash on checking in later code
             target.setMetadata("imposter", new FixedMetadataValue(App.getPlugin(App.class), false));
         }
@@ -141,16 +140,16 @@ public class EventListener implements Listener {
             first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.RED + "Imposter");
 
             // Displays the imposter names
-            fourth = objective.getScore(ChatColor.RED + app.imposter1.player.getName());
-            if (app.imposter2 != null)
-                fifth = objective.getScore(ChatColor.RED + app.imposter2.player.getName());
+            fourth = objective.getScore(ChatColor.RED + app.gameState.imposters[0].player.getName());
+            if (app.gameState.imposters[1] != null)
+                fifth = objective.getScore(ChatColor.RED + app.gameState.imposters[1].player.getName());
         } else {
             // Display the crewmate name as their role
             first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.BLUE + "Crewmate");
 
             // Displays the names as question marks as they are not known yet
             fourth = objective.getScore(ChatColor.RED + "???");
-            if (app.imposter2 != null)
+            if (app.gameState.imposters[1] != null)
                 fifth = objective.getScore(ChatColor.RED + "???");
         }
 
@@ -206,7 +205,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onGameStart(GameStartEvent event) {
         // Sets the global gameStarted variable to true
-        app.gameStarted = true;
+        app.gameState.gameStarted = true;
 
         // Get all players
         Object[] players = Bukkit.getOnlinePlayers().toArray();
@@ -230,7 +229,7 @@ public class EventListener implements Listener {
             // Sets the imposter flag for the player to true
             app.playerStates[(int) tempObject[1]].imposter = true;
             // Sets the global imposter1 variable to the PlayerState of the imposter
-            app.imposter1 = app.playerStates[(int) tempObject[1]];
+            app.gameState.imposters[0] = app.playerStates[(int) tempObject[1]];
         } else {
             // Create 2 tempObjects that will store the output of the random PlayerState
             // pickers
@@ -241,12 +240,12 @@ public class EventListener implements Listener {
             // Sets the imposter flag for the player to true
             app.playerStates[(int) tempObject1[1]].imposter = true;
             // Sets the global imposter1 variable to the PlayerState of the imposter
-            app.imposter1 = app.playerStates[(int) tempObject1[1]];
+            app.gameState.imposters[0] = app.playerStates[(int) tempObject1[1]];
 
             // Sets the imposter flag for the player to true
             app.playerStates[(int) tempObject2[1]].imposter = true;
             // Sets the global imposter2 variable to the PlayerState of the imposter
-            app.imposter2 = app.playerStates[(int) tempObject2[1]];
+            app.gameState.imposters[2] = app.playerStates[(int) tempObject2[1]];
         }
 
         PlayerState[] nullStrippedArray = stripNullFromPlayerStates(app.playerStates);
@@ -269,6 +268,7 @@ public class EventListener implements Listener {
                 // Sets the players scoreboard to the imposter variant
                 state.player.setScoreboard(createScoreboard(true));
 
+                // Give the imposter the items
                 state.player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
                 state.player.getInventory().addItem((new Potion(PotionType.INVISIBILITY).toItemStack(2)));
             } else {
