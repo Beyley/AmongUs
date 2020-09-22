@@ -10,7 +10,6 @@ public class App extends JavaPlugin {
     // A list of all the player states
     public PlayerState[] playerStates = new PlayerState[10];
     // A bool to store whether or not the game has started
-    // TODO Create a GameState object for better consistency
     public GameState gameState = new GameState(null, null);
 
     // Run when the plugin is enabled
