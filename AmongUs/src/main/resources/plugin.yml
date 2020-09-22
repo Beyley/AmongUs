@@ -5,11 +5,7 @@ api-version: 1.15
 depend: [MinigameQueue]
 
 commands:
-    readycheck:
-      description: Checks who is ready
-      usage: /readycheck
-      permission: amongus.readycheck
-    readyup:
-      description: Ready up
-      usage: /readyup
-      permission: amongus.readyup
+    callmeeting:
+      description: Calls an emergency meeting
+      usage: /callmeeting
+      permission: amongus.callmeeting

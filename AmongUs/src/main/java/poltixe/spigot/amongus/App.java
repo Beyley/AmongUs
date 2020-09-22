@@ -1,10 +1,11 @@
 package poltixe.spigot.amongus;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class App extends JavaPlugin {
-    // Here for when configurable options are a thing
-    // public FileConfiguration config = getConfig();
+    // Get the config file
+    public FileConfiguration config = getConfig();
 
     // A list of all the player states
     public PlayerState[] playerStates = new PlayerState[10];
@@ -21,16 +22,15 @@ public class App extends JavaPlugin {
     // Run when the plugin is enabled
     @Override
     public void onEnable() {
-        // Here for when a config is implemented
-        /// config.addDefault("minPlayersForStart", 4);
-        /// config.options().copyDefaults(true);
-        /// saveConfig();
+        // Setup default config
+        config.addDefault("amountOfMeetings", 1);
+        config.options().copyDefaults(true);
+        saveConfig();
 
         // Registers an event listener
         getServer().getPluginManager().registerEvents(new EventListener(), this);
 
-        // Dummy command registers to make implementing commands later easier
-        // this.getCommand("readycheck").setExecutor(new CommandCheckReadyStatus());
-        // this.getCommand("readyup").setExecutor(new CommandReadyUp());
+        // Add commands
+        this.getCommand("callmeeting").setExecutor(new CommandCallMeeting());
     }
 }

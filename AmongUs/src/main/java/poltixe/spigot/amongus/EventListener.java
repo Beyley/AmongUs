@@ -73,14 +73,20 @@ public class EventListener implements Listener {
         Bukkit.getPluginManager().callEvent(playerDieEvent);
     }
 
+    public static PlayerState[] stripNullFromPlayerStates(PlayerState[] array) {
+        return Arrays.stream(array).filter(Objects::nonNull).toArray(PlayerState[]::new);
+    }
+
     // Called when the game needs to update information on alive players
     @EventHandler
     public void onCustomPlayerDie(CustomPlayerDieEvent event) {
         // Gets the target (the player who died)
         Player target = event.getPlayer();
 
+        PlayerState[] array = stripNullFromPlayerStates(app.playerStates);
+
         // Loop through all player states
-        for (PlayerState state : app.playerStates) {
+        for (PlayerState state : array) {
             // Checks if the state is the same as the player that died
             if (state.player == target) {
                 // Sets the player to be dead
@@ -103,7 +109,7 @@ public class EventListener implements Listener {
                             // Strikes lightning on the players death location
                             target.getWorld().strikeLightning(deathLocation);
                         }
-                    }, 0, 400);
+                    }, 400, 40000000);
                 }
             }
         }
@@ -161,8 +167,7 @@ public class EventListener implements Listener {
     // Gets a random player without the same one being chosen
     private static Object[] getRandomPlayerNoCopies(PlayerState[] array, int lastSelection) {
         // Remove all null objects from array
-        // TODO split into separate function (maybe even file)
-        array = Arrays.stream(array).filter(Objects::nonNull).toArray(PlayerState[]::new);
+        array = stripNullFromPlayerStates(array);
 
         // Creates a blank array of size 2
         // TODO create an object instead of this messyness
@@ -212,7 +217,7 @@ public class EventListener implements Listener {
             Player target = (Player) players[i];
 
             // Defined their playerstate in the global playerStates array
-            app.playerStates[i] = new PlayerState(target, false, true);
+            app.playerStates[i] = new PlayerState(target, false, true, app.config.getInt("amountOfMeetings"));
         }
 
         // Checks if the players are less then 7
@@ -244,8 +249,16 @@ public class EventListener implements Listener {
             app.imposter2 = app.playerStates[(int) tempObject2[1]];
         }
 
+        PlayerState[] nullStrippedArray = stripNullFromPlayerStates(app.playerStates);
+
         // Loop through all PlayerStates
-        for (PlayerState state : app.playerStates) {
+        for (PlayerState state : nullStrippedArray) {
+            // Bukkit.broadcastMessage(state.player.getName());
+
+            // Bukkit.broadcastMessage(state.toString());
+
+            // Bukkit.broadcastMessage(String.valueOf(state.alive));
+
             // Set player to survival
             state.player.setGameMode(GameMode.SURVIVAL);
 
