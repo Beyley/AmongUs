@@ -26,9 +26,6 @@ public class App extends JavaPlugin {
         // Registers an event listener
         getServer().getPluginManager().registerEvents(new EventListener(), this);
 
-        // Restarts the day progression
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule doDaylightCycle true");
-
         // Add commands
         this.getCommand("callmeeting").setExecutor(new CommandCallMeeting());
         this.getCommand("vote").setExecutor(new CommandVote());

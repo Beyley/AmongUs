@@ -159,6 +159,9 @@ public class EventListener implements Listener {
         // Sets the global gameStarted variable to true
         app.gameState.gameStarted = true;
 
+        // Restarts the day progression
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule doDaylightCycle true");
+
         // Get all players
         Object[] players = Bukkit.getOnlinePlayers().toArray();
 
