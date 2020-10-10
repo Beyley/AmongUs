@@ -90,6 +90,9 @@ public class EventListener implements Listener {
     // Called when the game needs to update information on alive players
     @EventHandler
     public void onCustomPlayerDie(CustomPlayerDieEvent event) {
+        if (!app.gameState.gameStarted)
+            return;
+
         // Gets the target (the player who died)
         Player target = event.getPlayer();
 
@@ -117,6 +120,9 @@ public class EventListener implements Listener {
                 }
             }, 400, 40000000);
         }
+
+        for (PlayerState updateScoreboardState : app.playerStates)
+            ScoreboardHandler.updateScoreboard(updateScoreboardState);
     }
 
     // Gets a random player without the same one being chosen

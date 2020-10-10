@@ -34,17 +34,40 @@ public class ScoreboardHandler {
             first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.RED + "Imposter");
 
             // Displays the imposter names
-            fourth = objective.getScore(ChatColor.RED + app.gameState.imposters[0].player.getName());
-            if (app.gameState.imposters[1] != null)
-                fifth = objective.getScore(ChatColor.RED + app.gameState.imposters[1].player.getName());
+            if (app.gameState.imposters[0].alive) {
+                fourth = objective.getScore(ChatColor.RED + app.gameState.imposters[0].player.getName());
+            } else {
+                fourth = objective.getScore(
+                        ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[0].player.getName());
+            }
+            if (app.gameState.imposters[1] != null) {
+                if (app.gameState.imposters[1].alive) {
+                    fifth = objective.getScore(ChatColor.RED + app.gameState.imposters[1].player.getName());
+                } else {
+                    fifth = objective.getScore(
+                            ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[1].player.getName());
+                }
+            }
         } else {
             // Display the crewmate name as their role
             first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.BLUE + "Crewmate");
 
             // Displays the names as question marks as they are not known yet
-            fourth = objective.getScore(ChatColor.RED + "???");
-            if (app.gameState.imposters[1] != null)
-                fifth = objective.getScore(ChatColor.RED + "???");
+            if (app.gameState.imposters[0].alive) {
+                fourth = objective.getScore(ChatColor.RED + "???");
+            } else {
+                fourth = objective.getScore(
+                        ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[0].player.getName());
+            }
+
+            if (app.gameState.imposters[1] != null) {
+                if (app.gameState.imposters[1].alive) {
+                    fifth = objective.getScore(ChatColor.RED + "???");
+                } else {
+                    fifth = objective.getScore(
+                            ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[1].player.getName());
+                }
+            }
         }
 
         if (app.gameState.gameStarted) {
