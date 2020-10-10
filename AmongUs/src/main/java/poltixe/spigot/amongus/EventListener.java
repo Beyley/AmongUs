@@ -114,55 +114,6 @@ public class EventListener implements Listener {
         }
     }
 
-    // Used to create the custom Among Us scoreboard
-    // TODO move to separate file in case anything else needs this
-    public Scoreboard createScoreboard(boolean imposter) {
-        // Creates a new scoreboard
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        // Creates a new objective with a dummy critera
-        Objective objective = scoreboard.registerNewObjective("scoreboard", "dummy");
-
-        // Sets the name of the scoreboard
-        objective.setDisplayName("Among Us");
-        // Sets the displayslot
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-
-        // Define the lines that the scoreboard will have
-        Score first;
-        Score second = objective.getScore("");
-        Score third = objective.getScore("Imposters: ");
-        Score fourth;
-        Score fifth = objective.getScore("");
-
-        // Checks if the player is an imposter
-        if (imposter) {
-            // Display the imposter name as their role
-            first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.RED + "Imposter");
-
-            // Displays the imposter names
-            fourth = objective.getScore(ChatColor.RED + app.gameState.imposters[0].player.getName());
-            if (app.gameState.imposters[1] != null)
-                fifth = objective.getScore(ChatColor.RED + app.gameState.imposters[1].player.getName());
-        } else {
-            // Display the crewmate name as their role
-            first = objective.getScore(ChatColor.BOLD + "Role : " + ChatColor.BLUE + "Crewmate");
-
-            // Displays the names as question marks as they are not known yet
-            fourth = objective.getScore(ChatColor.RED + "???");
-            if (app.gameState.imposters[1] != null)
-                fifth = objective.getScore(ChatColor.RED + "???");
-        }
-
-        // Set the lines scores
-        first.setScore(4);
-        second.setScore(3);
-        third.setScore(2);
-        fourth.setScore(1);
-        fifth.setScore(0);
-
-        return scoreboard;
-    }
-
     // Gets a random player without the same one being chosen
     private static Object[] getRandomPlayerNoCopies(PlayerState[] array, int lastSelection) {
         // Remove all null objects from array
@@ -266,7 +217,7 @@ public class EventListener implements Listener {
                 // Send the title that the player is an imposter
                 state.player.sendTitle(ChatColor.BOLD + "You are an " + ChatColor.RED + "Imposter", null, 10, 70, 20);
                 // Sets the players scoreboard to the imposter variant
-                state.player.setScoreboard(createScoreboard(true));
+                state.player.setScoreboard(ScoreboardHandler.updateScoreboard(state));
 
                 // Give the imposter the items
                 state.player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
@@ -275,7 +226,7 @@ public class EventListener implements Listener {
                 // Send the title that the player is an crewmate
                 state.player.sendTitle(ChatColor.BOLD + "You are a " + ChatColor.BLUE + "Crewmate", null, 10, 70, 20);
                 // Sets the players scoreboard to the crewmate variant
-                state.player.setScoreboard(createScoreboard(false));
+                state.player.setScoreboard(ScoreboardHandler.updateScoreboard(state));
             }
         }
     }
