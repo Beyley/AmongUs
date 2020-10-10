@@ -12,18 +12,14 @@ public class CommandCallMeeting implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        PlayerState senderState = null;
-
-        for (PlayerState state : app.playerStates) {
-            if (state.player.getName() == sender.getName()) {
-                senderState = state;
-            }
-        }
+        PlayerState senderState = PlayerState.getPlayerState(sender.getName());
 
         if (senderState.meetingsLeft == 0) {
             senderState.player.sendMessage(ChatColor.RED + "You have no emergency meetings left!");
             return true;
         }
+
+        senderState.player.setScoreboard(ScoreboardHandler.updateScoreboard(senderState));
 
         return true;
     }

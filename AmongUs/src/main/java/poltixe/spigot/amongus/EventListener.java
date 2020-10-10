@@ -84,33 +84,29 @@ public class EventListener implements Listener {
 
         PlayerState[] array = stripNullFromPlayerStates(app.playerStates);
 
-        // Loop through all player states
-        for (PlayerState state : array) {
-            // Checks if the state is the same as the player that died
-            if (state.player == target) {
-                // Sets the player to be dead
-                state.alive = false;
+        PlayerState state = PlayerState.getPlayerState(target.getName());
 
-                // Checks if the player died due to disconnection or not
-                if (event.ifDisconnectKill()) {
-                    // Broadcasts that the player disconnected
-                    Bukkit.broadcastMessage(ChatColor.RED + target.getName() + " has disconnected!");
-                } else {
-                    // Sets the players gamemoode to spectator
-                    target.setGameMode(GameMode.SPECTATOR);
+        // Sets the player to be dead
+        state.alive = false;
 
-                    // Gets their location
-                    Location deathLocation = target.getLocation();
+        // Checks if the player died due to disconnection or not
+        if (event.ifDisconnectKill()) {
+            // Broadcasts that the player disconnected
+            Bukkit.broadcastMessage(ChatColor.RED + target.getName() + " has disconnected!");
+        } else {
+            // Sets the players gamemoode to spectator
+            target.setGameMode(GameMode.SPECTATOR);
 
-                    // Sets a timer for 20 seconds since death
-                    app.getServer().getScheduler().scheduleSyncRepeatingTask(app, new Runnable() {
-                        public void run() {
-                            // Strikes lightning on the players death location
-                            target.getWorld().strikeLightning(deathLocation);
-                        }
-                    }, 400, 40000000);
+            // Gets their location
+            Location deathLocation = target.getLocation();
+
+            // Sets a timer for 20 seconds since death
+            app.getServer().getScheduler().scheduleSyncRepeatingTask(app, new Runnable() {
+                public void run() {
+                    // Strikes lightning on the players death location
+                    target.getWorld().strikeLightning(deathLocation);
                 }
-            }
+            }, 400, 40000000);
         }
     }
 
