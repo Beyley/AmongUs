@@ -8,6 +8,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -303,5 +304,13 @@ public class EventListener implements Listener {
         }
 
         app.gameState.gameEnded = true;
+    }
+
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (event.getEntity() instanceof EnderDragon) {
+            EndGameEvent endGameEvent = new EndGameEvent();
+
+            Bukkit.getPluginManager().callEvent(endGameEvent);
+        }
     }
 }
