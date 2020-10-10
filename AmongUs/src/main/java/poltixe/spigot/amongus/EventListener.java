@@ -47,6 +47,10 @@ public class EventListener implements Listener {
         if (event.getPlayer().getMetadata("frozen").get(0).asBoolean()) {
             event.setCancelled(true);
         }
+
+        if (!app.gameState.gameStarted)
+            // Restarts the day progression, kinda bodgey
+            Bukkit.getWorld("world").setTime(8000);
     }
 
     // Called when a player disconnects from the server
@@ -158,9 +162,6 @@ public class EventListener implements Listener {
     public void onGameStart(GameStartEvent event) {
         // Sets the global gameStarted variable to true
         app.gameState.gameStarted = true;
-
-        // Restarts the day progression
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule doDaylightCycle true");
 
         // Get all players
         Object[] players = Bukkit.getOnlinePlayers().toArray();
