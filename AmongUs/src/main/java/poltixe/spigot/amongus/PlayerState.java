@@ -16,6 +16,10 @@ public class PlayerState {
     // How many mettings the player has left
     public int meetingsLeft;
 
+    public PlayerState playerTheyVotedFor;
+
+    public int amountOfVotes = 0;
+
     // the constructor taking the Player object, the imposter value and the alive
     // value
     PlayerState(Player player, boolean imposter, boolean alive, int meetingsLeft) {
@@ -23,16 +27,16 @@ public class PlayerState {
         this.alive = alive;
         this.player = player;
         this.meetingsLeft = meetingsLeft;
+        this.playerTheyVotedFor = null;
     }
 
-    public static PlayerState getPlayerState(String playerName) {
+    public static PlayerState getPlayerStateFromName(String playerName) {
         PlayerState toSendState = null;
 
         PlayerState[] array = EventListener.stripNullFromPlayerStates(app.playerStates);
 
         for (PlayerState state : array) {
-            System.out.println(state.player.getName());
-            if (state.player.getName() == playerName) {
+            if (state.player.getName().equals(playerName)) {
                 toSendState = state;
             }
         }

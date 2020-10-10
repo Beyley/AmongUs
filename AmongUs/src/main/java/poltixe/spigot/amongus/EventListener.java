@@ -11,6 +11,7 @@ import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.*;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -33,6 +34,8 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player target = event.getPlayer();
 
+        target.setGameMode(GameMode.SPECTATOR);
+
         target.setMetadata("frozen", new FixedMetadataValue(App.getPlugin(App.class), false));
 
         // Checks if the game has already started
@@ -43,14 +46,19 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerVoteEvent(PlayerVoteEvent event) {
+        event.getVoter().playerTheyVotedFor = event.getPlayerVotedFor();
+    }
+
+    @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         if (event.getPlayer().getMetadata("frozen").get(0).asBoolean()) {
             event.setCancelled(true);
         }
 
-        if (!app.gameState.gameStarted)
-            // Restarts the day progression, kinda bodgey
+        if (!app.gameState.gameStarted) {// Restarts the day progression, kinda bodgey
             Bukkit.getWorld("world").setTime(8000);
+        }
     }
 
     // Called when a player disconnects from the server
@@ -96,7 +104,7 @@ public class EventListener implements Listener {
         // Gets the target (the player who died)
         Player target = event.getPlayer();
 
-        PlayerState state = PlayerState.getPlayerState(target.getName());
+        PlayerState state = PlayerState.getPlayerStateFromName(target.getName());
 
         // Sets the player to be dead
         state.alive = false;
@@ -121,8 +129,6 @@ public class EventListener implements Listener {
             }, 400, 40000000);
         }
 
-        for (PlayerState updateScoreboardState : app.playerStates)
-            ScoreboardHandler.updateScoreboard(updateScoreboardState);
     }
 
     // Gets a random player without the same one being chosen
@@ -232,13 +238,70 @@ public class EventListener implements Listener {
 
                 // Give the imposter the items
                 state.player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
-                state.player.getInventory().addItem((new Potion(PotionType.INVISIBILITY).toItemStack(2)));
+
+                ItemStack potion = new Potion(PotionType.INVISIBILITY).toItemStack(2);
+                ItemMeta itemMeta = potion.getItemMeta();
+                itemMeta.setDisplayName("Vents");
+
+                state.player.getInventory().addItem(potion);
             } else {
                 // Send the title that the player is an crewmate
                 state.player.sendTitle(ChatColor.BOLD + "You are a " + ChatColor.BLUE + "Crewmate", null, 10, 70, 20);
                 // Sets the players scoreboard to the crewmate variant
                 state.player.setScoreboard(ScoreboardHandler.updateScoreboard(state));
             }
+
+            app.getServer().getScheduler().scheduleSyncRepeatingTask(app, new Runnable() {
+                public void run() {
+                    for (PlayerState updateScoreboardState : stripNullFromPlayerStates(app.playerStates))
+                        updateScoreboardState.player
+                                .setScoreboard(ScoreboardHandler.updateScoreboard(updateScoreboardState));
+
+                    int amountOfImposters = 0;
+                    int amountOfCrewmates = 0;
+
+                    for (PlayerState checkIfEndGameState : stripNullFromPlayerStates(app.playerStates)) {
+                        if (checkIfEndGameState.alive) {
+                            if (checkIfEndGameState.imposter) {
+                                amountOfImposters += 1;
+                            } else {
+                                amountOfCrewmates += 1;
+                            }
+                        }
+                    }
+
+                    if (amountOfImposters >= amountOfCrewmates) {
+                        EndGameEvent endGameEvent = new EndGameEvent();
+
+                        Bukkit.getPluginManager().callEvent(endGameEvent);
+                    }
+                }
+            }, 0, 20);
         }
+    }
+
+    public void onEndGameEvent(EndGameEvent event) {
+        int amountOfImposters = 0;
+        int amountOfCrewmates = 0;
+
+        for (PlayerState state : stripNullFromPlayerStates(app.playerStates)) {
+            state.player.setGameMode(GameMode.SPECTATOR);
+
+            if (state.alive) {
+                if (state.imposter) {
+                    amountOfImposters += 1;
+                } else {
+                    amountOfCrewmates += 1;
+                }
+            }
+        }
+
+        if (amountOfImposters >= amountOfCrewmates) {
+            Bukkit.broadcastMessage("The Imposters have won!");
+        } else {
+            Bukkit.broadcastMessage("The Crewmates have won!");
+        }
+
+        app.gameState.gameEnded = true;
     }
 }

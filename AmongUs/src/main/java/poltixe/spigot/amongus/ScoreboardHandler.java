@@ -37,15 +37,13 @@ public class ScoreboardHandler {
             if (app.gameState.imposters[0].alive) {
                 fourth = objective.getScore(ChatColor.RED + app.gameState.imposters[0].player.getName());
             } else {
-                fourth = objective.getScore(
-                        ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[0].player.getName());
+                fourth = objective.getScore(ChatColor.RED + "DEAD:" + app.gameState.imposters[0].player.getName());
             }
             if (app.gameState.imposters[1] != null) {
                 if (app.gameState.imposters[1].alive) {
                     fifth = objective.getScore(ChatColor.RED + app.gameState.imposters[1].player.getName());
                 } else {
-                    fifth = objective.getScore(
-                            ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[1].player.getName());
+                    fifth = objective.getScore(ChatColor.RED + "DEAD:" + app.gameState.imposters[1].player.getName());
                 }
             }
         } else {
@@ -56,16 +54,14 @@ public class ScoreboardHandler {
             if (app.gameState.imposters[0].alive) {
                 fourth = objective.getScore(ChatColor.RED + "???");
             } else {
-                fourth = objective.getScore(
-                        ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[0].player.getName());
+                fourth = objective.getScore(ChatColor.RED + "DEAD:" + app.gameState.imposters[0].player.getName());
             }
 
             if (app.gameState.imposters[1] != null) {
                 if (app.gameState.imposters[1].alive) {
                     fifth = objective.getScore(ChatColor.RED + "???");
                 } else {
-                    fifth = objective.getScore(
-                            ChatColor.STRIKETHROUGH + "" + ChatColor.RED + app.gameState.imposters[1].player.getName());
+                    fifth = objective.getScore(ChatColor.RED + "DEAD:" + app.gameState.imposters[1].player.getName());
                 }
             }
         }

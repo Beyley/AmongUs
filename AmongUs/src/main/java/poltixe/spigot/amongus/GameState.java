@@ -5,6 +5,7 @@ public class GameState {
     public PlayerState[] imposters = new PlayerState[2];
     public Boolean inMeeting;
     public Boolean isVotingTime;
+    public Boolean gameEnded;
 
     GameState(PlayerState imposter) {
         this(imposter, null);
@@ -17,5 +18,6 @@ public class GameState {
 
         this.inMeeting = false;
         this.isVotingTime = false;
+        this.gameEnded = false;
     }
 }
