@@ -25,6 +25,8 @@ public class EventListener implements Listener {
     // Get an instance of the plugin
     private App app = App.getPlugin(App.class);
 
+    public int checkId;
+
     // Gets the configuration file
     FileConfiguration config = app.getConfig();
     // Creates a new random object
@@ -35,7 +37,8 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player target = event.getPlayer();
 
-        target.setGameMode(GameMode.SPECTATOR);
+        if (app.gameState.gameEnded)
+            target.setGameMode(GameMode.SPECTATOR);
 
         target.setMetadata("frozen", new FixedMetadataValue(App.getPlugin(App.class), false));
 
@@ -238,7 +241,9 @@ public class EventListener implements Listener {
                 state.player.setScoreboard(ScoreboardHandler.updateScoreboard(state));
 
                 // Give the imposter the items
-                state.player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
+                // state.player.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
+
+                state.player.getInventory().addItem(new ItemStack(Material.COMPASS));
 
                 ItemStack potion = new Potion(PotionType.INVISIBILITY).toItemStack(2);
                 ItemMeta itemMeta = potion.getItemMeta();
@@ -252,7 +257,7 @@ public class EventListener implements Listener {
                 state.player.setScoreboard(ScoreboardHandler.updateScoreboard(state));
             }
 
-            app.getServer().getScheduler().scheduleSyncRepeatingTask(app, new Runnable() {
+            checkId = app.getServer().getScheduler().scheduleSyncRepeatingTask(app, new Runnable() {
                 public void run() {
                     for (PlayerState updateScoreboardState : stripNullFromPlayerStates(app.playerStates))
                         updateScoreboardState.player
@@ -272,6 +277,8 @@ public class EventListener implements Listener {
                     }
 
                     if (amountOfImposters >= amountOfCrewmates) {
+                        Bukkit.broadcastMessage("game should end now");
+
                         EndGameEvent endGameEvent = new EndGameEvent();
 
                         Bukkit.getPluginManager().callEvent(endGameEvent);
@@ -281,23 +288,52 @@ public class EventListener implements Listener {
         }
     }
 
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player target = event.getPlayer();
+
+        ItemStack heldItem = target.getInventory().getItemInMainHand();
+
+        double closest = Double.MAX_VALUE;
+        Player closestp = null;
+        for (Player i : Bukkit.getOnlinePlayers()) {
+            double dist = i.getLocation().distance(event.getPlayer().getLocation());
+            if ((closest == Double.MAX_VALUE || dist < closest)
+                    && !(PlayerState.getPlayerStateFromName(i.getName()).imposter)) {
+                closest = dist;
+                closestp = i;
+            }
+        }
+
+        if (closestp == null) {
+            // No players found
+        } else {
+            if (heldItem.equals(new ItemStack(Material.COMPASS)))
+                target.setCompassTarget(closestp.getLocation());
+        }
+
+    }
+
     public void onEndGameEvent(EndGameEvent event) {
-        int amountOfImposters = 0;
-        int amountOfCrewmates = 0;
+        app.getServer().getScheduler().cancelTask(checkId);
+
+        Bukkit.broadcastMessage("game should end now");
+
+        int amountOfImposters2 = 0;
+        int amountOfCrewmates2 = 0;
 
         for (PlayerState state : stripNullFromPlayerStates(app.playerStates)) {
             state.player.setGameMode(GameMode.SPECTATOR);
 
             if (state.alive) {
                 if (state.imposter) {
-                    amountOfImposters += 1;
+                    amountOfImposters2 += 1;
                 } else {
-                    amountOfCrewmates += 1;
+                    amountOfCrewmates2 += 1;
                 }
             }
         }
 
-        if (amountOfImposters >= amountOfCrewmates) {
+        if (amountOfImposters2 >= amountOfCrewmates2) {
             Bukkit.broadcastMessage("The Imposters have won!");
         } else {
             Bukkit.broadcastMessage("The Crewmates have won!");
