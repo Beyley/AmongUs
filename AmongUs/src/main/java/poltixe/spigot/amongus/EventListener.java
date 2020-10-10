@@ -14,8 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.*;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
-import org.bukkit.scoreboard.*;
-
 import net.md_5.bungee.api.ChatColor;
 
 import poltixe.spigot.minigamequeue.*;
@@ -81,8 +79,6 @@ public class EventListener implements Listener {
     public void onCustomPlayerDie(CustomPlayerDieEvent event) {
         // Gets the target (the player who died)
         Player target = event.getPlayer();
-
-        PlayerState[] array = stripNullFromPlayerStates(app.playerStates);
 
         PlayerState state = PlayerState.getPlayerState(target.getName());
 
