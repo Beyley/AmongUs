@@ -1,5 +1,6 @@
 package poltixe.spigot.amongus;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,13 +18,19 @@ public class App extends JavaPlugin {
     public void onEnable() {
         // Setup default config
         config.addDefault("amountOfMeetings", 1);
+        config.addDefault("lengthOfDiscussion", 15);
+        config.addDefault("lengthOfVotingTime", 45);
         config.options().copyDefaults(true);
         saveConfig();
 
         // Registers an event listener
         getServer().getPluginManager().registerEvents(new EventListener(), this);
 
+        // Restarts the day progression
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "gamerule doDaylightCycle true");
+
         // Add commands
         this.getCommand("callmeeting").setExecutor(new CommandCallMeeting());
+        this.getCommand("vote").setExecutor(new CommandVote());
     }
 }

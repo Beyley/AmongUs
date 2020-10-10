@@ -9,3 +9,7 @@ commands:
       description: Calls an emergency meeting
       usage: /callmeeting
       permission: amongus.callmeeting
+    vote:
+      description: Vote for a player
+      usage: /vote [playername]
+      permission: amongus.vote

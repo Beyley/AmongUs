@@ -33,10 +33,19 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player target = event.getPlayer();
 
+        target.setMetadata("frozen", new FixedMetadataValue(App.getPlugin(App.class), false));
+
         // Checks if the game has already started
         if (!app.gameState.gameStarted) {
             // If not, give player base metadata to not crash on checking in later code
             target.setMetadata("imposter", new FixedMetadataValue(App.getPlugin(App.class), false));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.getPlayer().getMetadata("frozen").get(0).asBoolean()) {
+            event.setCancelled(true);
         }
     }
 

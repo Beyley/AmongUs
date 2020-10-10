@@ -3,6 +3,8 @@ package poltixe.spigot.amongus;
 public class GameState {
     public Boolean gameStarted;
     public PlayerState[] imposters = new PlayerState[2];
+    public Boolean inMeeting;
+    public Boolean isVotingTime;
 
     GameState(PlayerState imposter) {
         this(imposter, null);
@@ -12,5 +14,8 @@ public class GameState {
         this.gameStarted = false;
         this.imposters[0] = imposter1;
         this.imposters[1] = imposter2;
+
+        this.inMeeting = false;
+        this.isVotingTime = false;
     }
 }

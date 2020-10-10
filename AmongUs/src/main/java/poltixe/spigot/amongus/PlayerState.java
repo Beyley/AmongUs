@@ -28,7 +28,10 @@ public class PlayerState {
     public static PlayerState getPlayerState(String playerName) {
         PlayerState toSendState = null;
 
-        for (PlayerState state : app.playerStates) {
+        PlayerState[] array = EventListener.stripNullFromPlayerStates(app.playerStates);
+
+        for (PlayerState state : array) {
+            System.out.println(state.player.getName());
             if (state.player.getName() == playerName) {
                 toSendState = state;
             }
